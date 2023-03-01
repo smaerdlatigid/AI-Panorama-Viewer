@@ -89,8 +89,9 @@
                         // display the response message and id
                         //alert("Response: " + data.message + " ID: " + data.id);
                         // set the id in the text input field
-                        $("#id").val(data.id);
+                        //$("#id").val(data.id);
                         queryID = data.id;
+                        print("Query ID:" + queryID);
                         // check the status of the image generation
                         checkStatusLoop();
                     },
