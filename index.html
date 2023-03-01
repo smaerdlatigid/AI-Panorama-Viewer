@@ -16,7 +16,6 @@
             // Our Javascript will go here.
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-            var queryID = '4bb10966-a1d1-4d99-a71b-8a14598375b8';
             
             const renderer = new THREE.WebGLRenderer();
             renderer.setSize( window.innerWidth, window.innerHeight );
@@ -89,9 +88,7 @@
                         // display the response message and id
                         //alert("Response: " + data.message + " ID: " + data.id);
                         // set the id in the text input field
-                        //$("#id").val(data.id);
-                        queryID = data.id;
-                        print("Query ID:" + queryID);
+                        $("#id").val(data.id);
                         // check the status of the image generation
                         checkStatusLoop();
                     },
@@ -153,7 +150,7 @@
                             alert("Finished: " + data.finished + "\nProcessing: " + data.processing);
                             // if finished check status and update image
                             if (data.finished){
-                                checkStatus(queryID);
+                                checkStatus(id);
                             }
                             else{
                                 const myTimeout = setTimeout(checkStatusLoop, 5000);
@@ -171,7 +168,7 @@
         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
             <input type="text" id="prompt" placeholder="Enter your prompt" style="width: 200px; height: 30px; font-size: 20px; text-align: center;">
             <button id="submit" style="width: 200px; height: 30px; font-size: 20px;">Submit</button>
-            <!-- <input type="text" id="id" placeholder="Enter your id" style="width: 200px; height: 30px; font-size: 20px; text-align: center;"> -->
+            <input type="text" id="id" placeholder="Enter your id" style="width: 200px; height: 30px; font-size: 20px; text-align: center;"> -->
         </div>
     </body>
 </html>
