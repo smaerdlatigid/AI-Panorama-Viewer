@@ -24,6 +24,12 @@
             var endprompt = "unreal engine, VR360, artstation, symmetric";
             var id = "82168bb9-8129-491d-b60b-f139014942c5";
 
+            let isUserInteracting = false,
+				onPointerDownMouseX = 0, onPointerDownMouseY = 0,
+				lon = 0, onPointerDownLon = 0,
+				lat = 0, onPointerDownLat = 0,
+				phi = 0, theta = 0;
+
             init();
             animate();
 
@@ -45,8 +51,6 @@
             //const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
             mesh = new THREE.Mesh( geometry, material );
             scene.add( mesh );
-
-            //camera.position.z = 5;
             }
 
             function animate() {
