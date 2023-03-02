@@ -23,6 +23,7 @@
             var preprompt = "equirectangular panoramic, ";
             var endprompt = "unreal engine, VR360, artstation, symmetric";
             var id = "82168bb9-8129-491d-b60b-f139014942c5";
+            var image_url = "textures/ai_pano.png";
 
             let isUserInteracting = false,
 				onPointerDownMouseX = 0, onPointerDownMouseY = 0,
@@ -51,6 +52,9 @@
             //const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
             mesh = new THREE.Mesh( geometry, material );
             scene.add( mesh );
+
+            //camera.position.z = 5;
+            // hide the progress bar
             }
 
             function animate() {
@@ -119,6 +123,18 @@
                 });
             });
 
+            
+        $(document).ready(function(){
+            $("#download").click(function(){
+                // save image from url
+                var link = document.createElement('a');
+                link.download = 'image.webp';
+                link.href = image_url;
+                link.click();
+            });
+        });
+
+
             // make a new function to replicate curl
             // // curl -X 'GET' \
             //'https://stablehorde.net/api/v2/generate/status/82168bb9-8129-491d-b60b-f139014942c5' \
@@ -138,6 +154,7 @@
                         //alert("Finished: " + data.finished);
                         // reset the scene and load new image
                         scene.remove( mesh );
+                        image_url = data.generations[0].img;
                         texture = new THREE.TextureLoader().load( data.generations[0].img );
                         material = new THREE.MeshBasicMaterial( { map: texture } );
                         mesh = new THREE.Mesh( geometry, material );
@@ -181,6 +198,8 @@
                             alert(errMsg);
                         }
                     });
+
+
              }
             });
         </script>
@@ -192,12 +211,11 @@
                 <option value="Deliberate">Deliberate</option>
                 <option value="Project Unreal Engine 5">Project Unreal Engine 5</option>
                 <option value="stable_diffusion">Stable Diffusion</option>
-
             </select>
             
             <button id="submit" style="width: 50%; height: 50px; font-size: 20px; text-align: center; margin: 0 auto; display: block;">Create</button>
-
-
+            <!-- download button -->
+            <button id="download" style="width: 50%; height: 30px; font-size: 15px; text-align: center; margin: 0 auto; display: block;">Download</button>
         </div>
     </body>
 </html>
