@@ -20,6 +20,9 @@
             var material;
             var geometry;
             var mesh;
+            var preprompt = "equirectangular panoramic, 360 photo,";
+            var endprompt = "unreal engine, VR360, artstation";
+            var id = "82168bb9-8129-491d-b60b-f139014942c5";
 
             init();
             animate();
@@ -33,7 +36,7 @@
             renderer.setSize( window.innerWidth, window.innerHeight );
             document.body.appendChild( renderer.domElement );
 
-            texture = new THREE.TextureLoader().load( 'textures/sequoia.jpg' );
+            texture = new THREE.TextureLoader().load( 'textures/ai_pano.png' );
             material = new THREE.MeshBasicMaterial( { map: texture } );
 
             geometry = new THREE.SphereGeometry( 500, 60, 40 );
@@ -59,16 +62,16 @@
                 var prompt = $("#prompt").val();
                 // create a JSON object with the prompt
                 var data = {
-                    "prompt": prompt,
+                    "prompt": preprompt + " " + prompt + ", " + endprompt,
                     "params": {
                         "cfg_scale": 9,
                         "sampler_name": "k_euler_a",
                         "height": 512,
                         "width": 1024,
-                        "steps": 20,
+                        "steps": 30,
                         "tiling": false,
                         "karras": true,
-                        "hires_fix": false,
+                        "hires_fix": true,
                         "clip_skip": 1,
                         "n": 1,
                         "seed": "2015274653",
@@ -80,10 +83,10 @@
                     "censor_nsfw": false,
                     "trusted_workers": false,
                     "models": [
-                        "stable_diffusion"
+                        "Deliberate"
                     ],
                     "r2": true,
-                    "shared": false
+                    "shared": true
                 };
                 // send a POST request to the API
                 $.ajax({
@@ -100,7 +103,7 @@
                         // display the response message and id
                         //alert("Response: " + data.message + " ID: " + data.id);
                         // set the id in the text input field
-                        $("#id").val(data.id);
+                        id = data.id;
                         // check the status of the image generation
                         checkStatusLoop();
                     },
@@ -115,7 +118,7 @@
             //'https://stablehorde.net/api/v2/generate/status/82168bb9-8129-491d-b60b-f139014942c5' \
             //                    -H 'accept: application/json' \
             //                    -H 'Client-Agent: unknown:0:unknown'
-            function checkStatus(id){
+            function checkStatus(){
                 $.ajax({
                     type: "GET",
                     url: "https://stablehorde.net/api/v2/generate/status/" + id,
@@ -146,7 +149,6 @@
                 // poll every 5 seconds in while loop
                 var finished = 0;
                 // get the id from the text input field
-                var id = $("#id").val();
 
                     // send a GET request to the API
                     $.ajax({
@@ -159,10 +161,10 @@
                         },
                         success: function(data){
                             // display the response message and id
-                            alert("Finished: " + data.finished + "\nProcessing: " + data.processing);
+                            alert("id: "+ id + "\nProcessing: " + data.processing + "\nFinished: " + data.finished);
                             // if finished check status and update image
                             if (data.finished){
-                                checkStatus(id);
+                                checkStatus();
                             }
                             else{
                                 const myTimeout = setTimeout(checkStatusLoop, 5000);
@@ -176,11 +178,10 @@
              }
             });
         </script>
-        <!-- Add a centered text input and button -->
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <input type="text" id="prompt" placeholder="Enter your prompt" style="width: 200px; height: 30px; font-size: 20px; text-align: center;">
-            <button id="submit" style="width: 200px; height: 30px; font-size: 20px;">Submit</button>
-            <input type="text" id="id" placeholder="Enter your id" style="width: 200px; height: 30px; font-size: 20px; text-align: center;"> -->
+        <div style="position: absolute; top: 90%; left: 50%; transform: translate(-50%, -50%);">
+            <!-- Add two buttons at bottom of create with a long text input and centered submit -->
+            <input type="text" id="prompt" style="width: 100%; height: 50px; font-size: 20px; text-align: center; margin: 0 auto; display: block;" placeholder="Describe a scene">
+            <button id="submit" style="width: 50%; height: 50px; font-size: 20px; text-align: center; margin: 0 auto; display: block;">Create</button>
         </div>
     </body>
 </html>
