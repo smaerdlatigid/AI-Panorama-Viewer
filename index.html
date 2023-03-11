@@ -10,8 +10,22 @@
     <body>
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
+        <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+
+        <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.150.1/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.150.1/examples/jsm/"
+            }
+        }
+        </script>
+
+
         <script type="module">
-            import * as THREE from 'https://unpkg.com/three/build/three.module.js';
+
+            import * as THREE from 'three';
+            import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
             var scene;
             var camera;
@@ -20,40 +34,62 @@
             var material;
             var geometry;
             var mesh;
-            var preprompt = "equirectangular panoramic, ";
-            var endprompt = "unreal engine, VR360, artstation, symmetric";
+            var preprompt = "a 360 equirectangular panorama, (extremely detailed CG unity 8k wallpaper), ";
+            var endprompt = "unreal engine, VR360, artstation";
             var id = "82168bb9-8129-491d-b60b-f139014942c5";
             var image_url ="textures/ai_pano.png";
+
+            let isUserInteracting = false,
+				onPointerDownMouseX = 0, onPointerDownMouseY = 0,
+				lon = 0, onPointerDownLon = 0,
+				lat = 0, onPointerDownLat = 0,
+				phi = 0, theta = 0;
 
             init();
             animate();
 
             function init() {
-            // Our Javascript will go here.
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-            
-            renderer = new THREE.WebGLRenderer();
-            renderer.setSize( window.innerWidth, window.innerHeight );
-            document.body.appendChild( renderer.domElement );
 
-            texture = new THREE.TextureLoader().load( 'textures/ai_pano.png' );
-            material = new THREE.MeshBasicMaterial( { map: texture } );
+                // set up a scene, camera, and renderer as global variables
+                scene = new THREE.Scene();
 
-            geometry = new THREE.SphereGeometry( 500, 60, 40 );
-            // invert the geometry on the x-axis so that all of the faces point inward
-            geometry.scale( - 1, 1, 1 );
-            //const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-            mesh = new THREE.Mesh( geometry, material );
-            scene.add( mesh );
+                // set up the camera with variables for field of view, aspect ratio, and near and far clipping planes
+                camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 10000 );
+                
+                // set up the renderer
+                renderer = new THREE.WebGLRenderer();
+                renderer.setSize( window.innerWidth, window.innerHeight );
+                document.body.appendChild( renderer.domElement );
+                
+                // load a random image to start out
+                var rand = Math.floor(Math.random() * 5) + 1;
+                texture = new THREE.TextureLoader().load( 'textures/city_pano_' + rand + '.png' );
+                material = new THREE.MeshBasicMaterial( { map: texture } );
 
-            //camera.position.z = 5;
-            // hide the progress bar
+                // create a sphere geometry (radius, width segments, height segments)
+                geometry = new THREE.SphereGeometry( 512, 32, 32 );
+
+                // invert the geometry on the x-axis so that all of the faces point inward
+                geometry.scale( - 1, 1, 1 );
+
+                mesh = new THREE.Mesh( geometry, material );
+                scene.add( mesh );
+
+                // add orbit controls so that we can pan around with the mouse
+                const controls = new OrbitControls( camera, renderer.domElement );
+
+                //controls.update() must be called after any manual changes to the camera's transform
+                camera.position.set( 0, 20, 100 );
+                controls.update();
+
             }
 
             function animate() {
                 requestAnimationFrame( animate );
                 mesh.rotation.y += 0.0005;
+
+                //controls.update();
+
                 renderer.render( scene, camera );
             }
 
@@ -195,6 +231,7 @@
                  }
             });
         </script>
+
         <div style="position: absolute; top: 90%; left: 50%; transform: translate(-50%, -50%);">
             <!-- Add two buttons at bottom of create with a long text input and centered submit -->
             <input type="text" id="prompt" style="width: 100%; height: 50px; font-size: 20px; text-align: center; margin: 0 auto; display: block;" placeholder="Describe a scene">
