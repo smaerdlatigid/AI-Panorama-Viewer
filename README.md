@@ -1,1 +1,1 @@
-# [AI-Panorama-Viewer](https://pearsonkyle.github.io/AI-Panorama-Viewer/)
+# [AI-Panorama-Viewer](https://smaerdlatigid.github.io/AI-Panorama-Viewer/)
