@@ -35,9 +35,9 @@
             var geometry;
             var mesh;
             var preprompt = "a 360 equirectangular panorama, (extremely detailed CG unity 8k wallpaper), ";
-            var endprompt = "unreal engine, VR360, artstation";
+            var endprompt = "unreal engine, VR360, artstation, panorama hdri";
             var id = "82168bb9-8129-491d-b60b-f139014942c5";
-            var image_url ="textures/ai_pano.png";
+            var image_url ="textures/pano_1.jpg";
 
             init();
             animate();
@@ -48,7 +48,7 @@
                 scene = new THREE.Scene();
 
                 // set up the camera with variables for field of view, aspect ratio, and near and far clipping planes
-                camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 10000 );
+                camera = new THREE.PerspectiveCamera( 80, window.innerWidth / window.innerHeight, 0.1, 10000 );
                 
                 // set up the renderer
                 renderer = new THREE.WebGLRenderer();
@@ -57,8 +57,15 @@
                 
                 // load a random image to start out
                 var rand = Math.floor(Math.random() * 5) + 1;
-                texture = new THREE.TextureLoader().load( 'textures/city_pano_' + rand + '.png' );
+                // set mapping property of texture to equirectangular
+                //texture = new THREE.TextureLoader().load( 'textures/city_pano_' + rand + '.png' );
+                texture = new THREE.TextureLoader().load( 'textures/pano_' + rand + '.jpg' );
+
+                texture.mapping = THREE.EquirectangularReflectionMapping;
+
+                // create a basic material using the texture we just loaded as a color map
                 material = new THREE.MeshBasicMaterial( { map: texture } );
+
 
                 // create a sphere geometry (radius, width segments, height segments)
                 geometry = new THREE.SphereGeometry( 512, 32, 32 );
@@ -73,9 +80,10 @@
                 const controls = new OrbitControls( camera, renderer.domElement );
 
                 //controls.update() must be called after any manual changes to the camera's transform
-                camera.position.set( 0, 10, 100 );
+                camera.position.set( 0, 0, 50 );
                 controls.update();
 
+                window.addEventListener( 'resize', onWindowResize );
             }
 
             function animate() {
@@ -87,6 +95,13 @@
                 renderer.render( scene, camera );
             }
 
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+
+                renderer.setSize( window.innerWidth, window.innerHeight );
+            }
+
         $(document).ready(function(){
 
             $("#submit").click(function(){
@@ -96,32 +111,40 @@
                 var data = {
                     "prompt": preprompt + " " + prompt + ", " + endprompt,
                     "params": {
-                        "cfg_scale": 9,
-                        "sampler_name": "k_euler_a",
+                        "cfg_scale": 7.5,
+                        "sampler_name": "k_dpmpp_2m",
                         "height": 512,
                         "width": 1024,
-                        "steps": 30,
+                        "steps": 35,
                         "tiling": false,
-                        "karras": true,
+                        "karras": false,
                         "hires_fix": true,
                         "clip_skip": 1,
                         "n": 1,
                         "seed": "2015274653",
                         "post_processing": [
-                            "RealESRGAN_x4plus"
+                            "NMKD_Siax"
+                        ],
+                        "loras": [
+                        {
+                            "name": "10753",
+                            "model": 0.5,
+                            "clip": 1
+                        }
                         ]
                     },
                     "nsfw": true,
                     "censor_nsfw": false,
                     "trusted_workers": false,
                     "models": [
-                        //"Deliberate"
-                        //"Project Unreal Engine 5"
                         $("#model").val()
                     ],
                     "r2": true,
                     "shared": true
                 };
+                // change seed to random value as str
+                data.params.seed = Math.floor(Math.random() * 10000000000).toString();
+
                 // send a POST request to the API
                 $.ajax({
                     type: "POST",
@@ -232,8 +255,9 @@
             <!-- Create dropdown to choose model -->
             <select id="model" style="width: 100%; height: 50px; font-size: 20px; text-align: center; margin: 0 auto; display: block;">
                 <option value="Deliberate">Deliberate</option>
-                <option value="Project Unreal Engine 5">Project Unreal Engine 5</option>
                 <option value="stable_diffusion">Stable Diffusion</option>
+                <option value="Dreamshaper">Dreamshaper</option>
+                <option value="ChilloutMix">ChilloutMix</option>
             </select>
             
             <button id="submit" style="width: 50%; height: 50px; font-size: 20px; text-align: center; margin: 0 auto; display: block;">Create</button>
