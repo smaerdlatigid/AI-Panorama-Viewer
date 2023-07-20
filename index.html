@@ -69,7 +69,7 @@
 
             init();
             animate();
-            loadEnv('textures/.env')
+            loadEnv('textures/jokes.txt')
 
             function init() {
 
@@ -112,7 +112,7 @@
                 camera.position.set( 0, 0, 50 );
                 controls.update();
 
-                window.addEventListener( 'resize', onWindowResize );
+                window.addEventListener('resize', onWindowResize );
             }
 
             function animate() {
