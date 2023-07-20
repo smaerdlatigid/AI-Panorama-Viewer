@@ -9,24 +9,23 @@
     </head>
     <body>
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
         <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
 
         <script type="importmap">
         {
             "imports": {
                 "three": "https://unpkg.com/three@0.150.1/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.150.1/examples/jsm/"
+                "three/addons/": "https://unpkg.com/three@0.150.1/examples/jsm/",
+                "crypto-js": "https://cdn.skypack.dev/crypto-js"
             }
         }
         </script>
 
-
         <script type="module">
-
+            import CryptoJS from 'crypto-js';
             import * as THREE from 'three';
             import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
+            
             var scene;
             var camera;
             var renderer;
@@ -34,13 +33,43 @@
             var material;
             var geometry;
             var mesh;
-            var preprompt = "a 360 equirectangular panorama, (extremely detailed CG unity 8k wallpaper), ";
-            var endprompt = "unreal engine, VR360, artstation, panorama hdri";
+            var website = "digitaldream.io"
+            var preprompt = "a 360 equirectangular panorama,";
+            var endprompt = "unreal engine, intricate detail, panorama hdri";
             var id = "82168bb9-8129-491d-b60b-f139014942c5";
             var image_url ="textures/pano_1.jpg";
+            
+            function loadEnv(url) {
+
+                // Fetch file contents
+                fetch(url)
+                .then(res => res.text())
+                .then(text => {
+
+                    // Split into lines
+                    const lines = text.split('\n');
+
+                    // Build env object  
+                    const env = {};
+                    lines.forEach(line => {
+                        const [key, value] = line.split('=');
+                        env[key] = value; 
+                    });
+                    
+                    // Set env as window property
+                    window.env = env;
+
+                    var key = window.env.STABLE_HORDE_API_KEY.toString(CryptoJS.enc.Utf8);
+                    var decrypted = CryptoJS.AES.decrypt(key, website);
+                    window.env.STABLE_HORDE_API_KEY = decrypted.toString(CryptoJS.enc.Utf8);
+
+                    return env;
+                });
+            }
 
             init();
             animate();
+            loadEnv('textures/.env')
 
             function init() {
 
@@ -111,24 +140,26 @@
                 var data = {
                     "prompt": preprompt + " " + prompt + ", " + endprompt,
                     "params": {
-                        "cfg_scale": 7.5,
-                        "sampler_name": "k_dpmpp_2m",
+                        "cfg_scale": 8,
+                        "sampler_name": "k_dpm_2_a",
                         "height": 512,
                         "width": 1024,
-                        "steps": 35,
+                        "steps": 33,
                         "tiling": false,
                         "karras": false,
-                        "hires_fix": true,
+                        "hires_fix": false,
                         "clip_skip": 1,
                         "n": 1,
+                        "denoising_strength": 0.75,
                         "seed": "2015274653",
                         "post_processing": [
-                            "NMKD_Siax"
+                            //"NMKD_Siax"
+                            "RealESRGAN_x4plus"
                         ],
                         "loras": [
                         {
                             "name": "10753",
-                            "model": 0.5,
+                            "model": 0.666,
                             "clip": 1
                         }
                         ]
@@ -140,7 +171,8 @@
                         $("#model").val()
                     ],
                     "r2": true,
-                    "shared": true
+                    "shared": true,
+                    "source_processing": "img2img"
                 };
                 // change seed to random value as str
                 data.params.seed = Math.floor(Math.random() * 10000000000).toString();
@@ -153,8 +185,8 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     headers: {
-                        "apikey": "KAAOmTev_747cF7iKaN60w",
-                        "Client-Agent": "unknown:0:unknown"
+                        "apikey": window.env.STABLE_HORDE_API_KEY,
+                        "Client-Agent": "admin@digitaldream.io:0:unknown"
                     },
                     success: function(data){
                         // display the response message and id
@@ -247,6 +279,7 @@
                     });
                  }
             });
+
         </script>
 
         <div style="position: absolute; top: 90%; left: 50%; transform: translate(-50%, -50%);">
