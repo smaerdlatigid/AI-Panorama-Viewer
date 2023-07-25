@@ -6,10 +6,32 @@
         <style>
             body { margin: 0; }
         </style>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     </head>
     <body>
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
         <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <a class="navbar-brand" href="https://www.digitaldream.io">Digital Dreams</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.digitaldream.io">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://www.digitaldream.io/about.html">About</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="http://ai.digitaldream.io/">AI Skybox<span class="sr-only">(current)</span></a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
 
         <script type="importmap">
         {
@@ -281,7 +303,11 @@
             });
 
         </script>
-
+        <!-- Add jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  
         <div style="position: absolute; top: 90%; left: 50%; transform: translate(-50%, -50%);">
             <!-- Add two buttons at bottom of create with a long text input and centered submit -->
             <input type="text" id="prompt" style="width: 100%; height: 50px; font-size: 20px; text-align: center; margin: 0 auto; display: block;" placeholder="Describe a scene">
